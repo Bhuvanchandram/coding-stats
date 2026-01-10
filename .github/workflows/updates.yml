@@ -1,0 +1,33 @@
+name: Update Coding Stats
+
+on:
+  schedule:
+    - cron: "0 2 * * *"   
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run batch job
+        run: python update_stats.py
+
+      - name: Commit changes
+        run: |
+          git config user.name "bhuvanchandram"
+          git config user.email "bhuvanchandra668@gmail.com"
+          git add stats.json
+          git commit -m "Auto-update coding stats" || exit 0
+          git push
